@@ -75,7 +75,7 @@ void setup() {
   ResetCount = ResetVarLesen();
   if((ResetCount < 0)||(ResetCount > 5))  //Prüfen ob Wert Plausibel, wenn nicht rücksetzen
     ResetCount = 0;
-    //ResetCount++;
+  //ResetCount++;
   ResetVarSpeichern(ResetCount);
   delay(5000);
   if (ResetCount < 5) //Wenn nicht 5 mal in den ersten 5 Sekunden der Startvorgang abgebrochen wurde
@@ -117,8 +117,8 @@ void setup() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               char *Header_neu = new char[(strlen(html_header) + 50)];
-              char *Body_neu = new char[(strlen(html_NWconfig)+250)];
-              char *HTMLString = new char[(strlen(html_header) + 50)+(strlen(html_NWconfig)+250)];
+              char *Body_neu = new char[(strlen(html_NWconfig)+750)];
+              char *HTMLString = new char[(strlen(html_header) + 50)+(strlen(html_NWconfig)+750)];
               //Vorbereitung Datum
               unsigned long epochTime = timeClient->getEpochTime();
               struct tm *ptm = gmtime((time_t *)&epochTime);
