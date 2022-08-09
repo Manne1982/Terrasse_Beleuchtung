@@ -57,7 +57,7 @@ Uhrzeit: %s | Datum: %s, %02d.%02d.%d | Status:
 const char html_NWconfig[] PROGMEM = R"rawliteral(
 <h1>Terrasse Einstellungen</h1><hr>
 <h2>WLAN</h2>
-<form action="/get">
+<form method="post" action="/POST">
 <TABLE>
   <TR>
     <TD WIDTH="120" VALIGN="TOP">
@@ -85,7 +85,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
 </form>
 <hr>
 <h2>Netzwerk</h2><br />
-<form action="/get">
+<form method="post" action="/POST">
 <TABLE>
   <TR>
     <TD WIDTH="200" VALIGN="TOP">
@@ -165,7 +165,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
   </form>
 <hr>
 <h2>MQTT</h2><br>
-<form action="/get">
+<form method="post" action="/POST">
 <table>
   <tbody><tr>
     <td valign="TOP">
@@ -187,7 +187,7 @@ const char html_NWconfig[] PROGMEM = R"rawliteral(
     <td valign="TOP">
       Benutzername: </td>
   <td>  
-    <input name="mqUser" type="text" minlength="3" maxlength="15" size="19" value="%s"><br><br></td>
+    <input name="mqUser" type="text" minlength="6" maxlength="15" size="19" value="%s"><br><br></td>
     <td valign="TOP">
        </td>
   </tr>

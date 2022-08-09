@@ -43,14 +43,10 @@ unsigned int stateRelais = 0;
 String RelaisText[2] = {"Bewegungsmelder", "Terrasse"};
 int InputState;  //Status am Eingang 2 (Bewegungsmelder aktiv)
 unsigned long Ausschaltverz = 0; //wenn diese überschritten, wird Status auf LOW gesetzt (50 Hz Ripple ausgleich)
-
+bool ESP_Restart = false;
 
 //Erstellen Serverelement
 AsyncWebServer server(80);
-
-// WiFi Variablen
-const char *ssid_AP = "ESP_Terrasse_01";
-const char *password_AP = ""; //Wenn Passwort, dann muss es eine Laenge von 8 - 32 Zeichen haben
 
 //Uhrzeit Variablen
 WiFiUDP ntpUDP;
@@ -62,13 +58,10 @@ PubSubClient MQTTclient(wifiClient);
 
 
 void setup() {
-  Serial.end();
+  Serial.begin(9600);
   pinMode(0, OUTPUT);
   digitalWrite(0, HIGH);
-//  digitalWrite(0, LOW);
-  pinMode(1, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
-  pinMode(3, INPUT_PULLUP);
   InputState = digitalRead(2);
 
   char ResetCount = 0;
@@ -140,7 +133,7 @@ void setup() {
               delete[] Body_neu;
               delete[] Header_neu;
             });
-  server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/POST", HTTP_POST, [](AsyncWebServerRequest *request)
             {
               int parameter = request->params();
               unsigned short int *submitBereich;
@@ -183,7 +176,7 @@ void setup() {
                   }
                   request->send_P(200, "text/html", "Daten wurden uebernommen und ESP wird neu gestartet!<br><a href=\\Settings\\>Zurueck</a> <meta http-equiv=\"refresh\" content=\"15; URL=\\\">"); //<a href=\>Startseite</a>
                   EinstSpeichern();
-                  ESP.restart();
+                  ESP_Restart = true;
                   break;
                 case subnw:
                 {
@@ -230,11 +223,11 @@ void setup() {
                   strcpy(varConfig.NW_DNS, tmp_IPAdressen[3].c_str());
                   strcpy(varConfig.NW_NTPServer, tmp_NTPServer.c_str());
                   varConfig.NW_NTPOffset = tmp_NTPOffset;
-                  request->send_P(200, "text/html", "Daten wurden uebernommen und ESP wird neu gestartet!<br><meta http-equiv=\"refresh\" content=\"10; URL=\\\">"); //<a href=\>Startseite</a>
-                }
+                  request->send_P(200, "text/html", "Daten wurden uebernommen und ESP wird neu gestartet!<br><meta http-equiv=\"refresh\" content=\"15; URL=\\\">"); //<a href=\>Startseite</a>
                   EinstSpeichern();
-                  ESP.restart();
+                  ESP_Restart = true;
                   break;
+                }
                 case submq:
                 {
                   String Temp[6];
@@ -270,15 +263,12 @@ void setup() {
                     strcpy(varConfig.MQTT_rootpath, Temp[4].c_str());
                   if((Temp[5].length()<=65)&&(Temp[5].length()>5)&&(Temp[5]!= "xxxxxx"))
                     strcpy(varConfig.MQTT_fprint, Temp[5].c_str());
-                }
                   EinstSpeichern();
-                  if(MQTTinit())
-                    request->send_P(200, "text/html", "Daten wurden uebernommen, Verbindung zu MQTT-Server hergestellt!<br><meta http-equiv=\"refresh\" content=\"10; URL=\\\">"); //<a href=\>Startseite</a>
-                  else
-                    request->send_P(200, "text/html", "Daten wurden uebernommen, Verbindung zu MQTT-Server konnte nicht hergestellt werden!<br><meta http-equiv=\"refresh\" content=\"10; URL=\\\">"); //<a href=\>Startseite</a>
+                  MQTTclient.disconnect();
+                  request->send_P(200, "text/html", "MQTT Daten wurden uebernommen!<br><meta http-equiv=\"refresh\" content=\"3; URL=\\\">"); //<a href=\>Startseite</a>
 
                   break;
-                
+                }               
                 default:
                   char strFailure[50];
                   sprintf(strFailure, "Anweisung unbekannt, Empfangen: %u", *submitBereich);
@@ -334,7 +324,11 @@ void loop() {
     if(WIFIConnectionCheck(true))
       MQTT_sendInputState();
   }
-
+  if(ESP_Restart)
+  {
+    delay(1000);
+    ESP.restart();
+  }
 
 }
 
@@ -391,7 +385,7 @@ void WiFi_Start_AP()
   WiFi.mode(WIFI_AP); // Accesspoint
                       //  WiFi.hostname(varConfig.NW_NetzName);
 
-  WiFi.softAP(ssid_AP, password_AP);
+  WiFi.softAP(varConfig.WLAN_SSID, varConfig.WLAN_Password);
   server.begin();
   //IPAddress myIP = WiFi.softAPIP();
   //  my_WiFi_Mode = WIFI_AP;
