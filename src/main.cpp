@@ -75,7 +75,7 @@ void setup() {
     EinstLaden();
   ResetVarSpeichern(0);
   //WLAN starten
-    if (varConfig.WLAN_AP_Aktiv == 1)
+  if (varConfig.WLAN_AP_Aktiv == 1)
     WiFi_Start_AP();
   else
     WiFi_Start_STA(varConfig.WLAN_SSID, varConfig.WLAN_Password);
@@ -126,7 +126,7 @@ void setup() {
                 else
                   pntSelected[i] = (char *)varSelected[0].c_str();
               sprintf(Header_neu, html_header, timeClient->getFormattedTime().c_str(), WeekDays[timeClient->getDay()].c_str(), monthDay, currentMonth, currentYear);
-              sprintf(Body_neu, html_NWconfig, Un_Checked[(short)varConfig.WLAN_AP_Aktiv].c_str(), varConfig.WLAN_SSID, Un_Checked[(short)varConfig.NW_StatischeIP].c_str(), varConfig.NW_IPAdresse, varConfig.NW_NetzName, varConfig.NW_SubMask, varConfig.NW_Gateway, varConfig.NW_DNS, varConfig.NW_NTPServer, pntSelected[0], pntSelected[1], pntSelected[2], pntSelected[3], pntSelected[4], varConfig.MQTT_Server, varConfig.MQTT_Port, varConfig.MQTT_Username, varConfig.MQTT_rootpath);
+              sprintf(Body_neu, html_NWconfig, Un_Checked[(short)varConfig.WLAN_AP_Aktiv].c_str(), varConfig.WLAN_SSID, Un_Checked[(short)varConfig.NW_StatischeIP].c_str(), varConfig.NW_IPAddress, varConfig.NW_NetzName, varConfig.NW_SubMask, varConfig.NW_Gateway, varConfig.NW_DNS, varConfig.NW_NTPServer, pntSelected[0], pntSelected[1], pntSelected[2], pntSelected[3], pntSelected[4], varConfig.MQTT_Server, varConfig.MQTT_Port, varConfig.MQTT_Username, varConfig.MQTT_rootpath);
               sprintf(HTMLString, "%s%s", Header_neu, Body_neu);
               request->send_P(200, "text/html", HTMLString);
               delete[] HTMLString;
@@ -216,7 +216,7 @@ void setup() {
                       return;
                     }
                   varConfig.NW_StatischeIP = tmp_StatischeIP;
-                  strcpy(varConfig.NW_IPAdresse, tmp_IPAdressen[0].c_str());
+                  strcpy(varConfig.NW_IPAddress, tmp_IPAdressen[0].c_str());
                   strcpy(varConfig.NW_NetzName, tmp_NetzName.c_str());
                   strcpy(varConfig.NW_SubMask, tmp_IPAdressen[1].c_str());
                   strcpy(varConfig.NW_Gateway, tmp_IPAdressen[2].c_str());
@@ -340,7 +340,7 @@ void WiFi_Start_STA(char *ssid_sta, char *password_sta)
   unsigned int Adresspuffer[4];
   if (varConfig.NW_StatischeIP)
   {
-    sscanf(varConfig.NW_IPAdresse, "%d.%d.%d.%d", &Adresspuffer[0], &Adresspuffer[1], &Adresspuffer[2], &Adresspuffer[3]);
+    sscanf(varConfig.NW_IPAddress, "%d.%d.%d.%d", &Adresspuffer[0], &Adresspuffer[1], &Adresspuffer[2], &Adresspuffer[3]);
     IPAddress IP(Adresspuffer[0], Adresspuffer[1], Adresspuffer[2], Adresspuffer[3]);
     sscanf(varConfig.NW_Gateway, "%d.%d.%d.%d", &Adresspuffer[0], &Adresspuffer[1], &Adresspuffer[2], &Adresspuffer[3]);
     IPAddress IPGate(Adresspuffer[0], Adresspuffer[1], Adresspuffer[2], Adresspuffer[3]);

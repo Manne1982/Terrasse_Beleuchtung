@@ -29,7 +29,7 @@ struct NWConfig {
   //Einstellungen NW-Einstellungen Netzwerk
   char NW_StatischeIP = 0;
   char NW_NetzName[20] = "Terrasse";
-  char NW_IPAdresse[17] = "192.168.178.10";
+  char NW_IPAddress[17] = "192.168.178.10";
   char NW_SubMask[17] = "255.255.255.0";
   char NW_Gateway[17] = "192.168.178.1";
   char NW_DNS[17] = "192.168.178.1";
