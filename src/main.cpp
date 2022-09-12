@@ -39,6 +39,7 @@ int switchRelais(int _var);
 NWConfig varConfig;
 unsigned long Break_h = 0;
 unsigned long Break_s = 0;
+unsigned long switchBreak = 0;
 unsigned int stateRelais = 0;
 String RelaisText[2] = {"Bewegungsmelder", "Terrasse"};
 int InputState;  //Status am Eingang 2 (Bewegungsmelder aktiv)
@@ -590,12 +591,18 @@ String IntToStrHex(int _var)
 
 int switchRelais(int _var = 3)
 {
+  if(switchBreak > millis()) 
+  {
+    MQTT_sendOutputState();
+    return stateRelais;
+  }
   switch(_var)
   {
     case 1:
       digitalWrite(0, LOW);
       stateRelais = 1;
       MQTT_sendOutputState();
+      switchBreak = millis() + 30000; //30 s breake because of the start-up current limiters
       return 1;
     case 2:
       if(stateRelais)
@@ -607,6 +614,7 @@ int switchRelais(int _var = 3)
       digitalWrite(0, HIGH);
       stateRelais = 0;
       MQTT_sendOutputState();
+      switchBreak = millis() + 30000;
       return 0;
       break;
   }
