@@ -60,9 +60,6 @@ PubSubClient MQTTclient(wifiClient);
 
 void setup() {
   Serial.begin(9600);
-  pinMode(0, OUTPUT);
-  digitalWrite(0, HIGH);
-  pinMode(2, INPUT_PULLUP);
   InputState = digitalRead(2);
 
   char ResetCount = 0;
@@ -279,6 +276,9 @@ void setup() {
               }
             });
   MQTT_sendInputState();
+  pinMode(0, OUTPUT);
+  pinMode(2, INPUT_PULLUP);
+  digitalWrite(0, HIGH);
 }
 uint16 Test = 0;
 void loop() {
