@@ -43,7 +43,7 @@ const char html_header[] PROGMEM = R"rawliteral(
 <html>
 <head>
   <title>Terrasse</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1", charset="UTF-8">
 </head>
 <body bgcolor=\"#BBFFFF\">
 Uhrzeit: %s | Datum: %s, %02d.%02d.%d | Status: 
