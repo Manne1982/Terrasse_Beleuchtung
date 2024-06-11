@@ -12,7 +12,7 @@ enum {indexAGM = 0, indexLED = 1, indexProgStart = 2, indexNWK = 3};
 const String Un_Checked[2]{"","Checked"};
 const String varSelected[2]{"", " selected=\"\""};
 // const String De_Aktiviert[2]{"Deaktiviert","Aktiviert"};
-const String Ein_Aus[2]{"Aus","Ein"};
+const String Ein_Aus[2]{"Ein", "Aus"};
 
 struct NWConfig {
   //Einstellungen NW-Einstellungen WLAN

@@ -42,12 +42,12 @@ unsigned long Break_s = 0;
 unsigned long switchBreak = 0;
 unsigned int stateRelais = 0;
 String RelaisText[2] = {"Bewegungsmelder", "Terrasse"};
-int InputState;  //Status am Eingang 2 (Bewegungsmelder aktiv)
+uint8 InputState;  //Status am Eingang 2 (Bewegungsmelder aktiv)
 unsigned long Ausschaltverz = 0; //wenn diese überschritten, wird Status auf LOW gesetzt (50 Hz Ripple ausgleich)
 bool ESP_Restart = false;
 
 //Erstellen Serverelement
-AsyncWebServer server(80);
+AsyncWebServer server(8080);
 
 //Uhrzeit Variablen
 WiFiUDP ntpUDP;
@@ -64,9 +64,9 @@ void setup() {
 
   char ResetCount = 0;
   ResetCount = ResetVarLesen();
-  if((ResetCount < 0)||(ResetCount > 5))  //Prüfen ob Wert Plausibel, wenn nicht rücksetzen
+  if((ResetCount < 0)||(ResetCount > 8))  //Prüfen ob Wert Plausibel, wenn nicht rücksetzen
     ResetCount = 0;
-  //ResetCount++;
+  ResetCount++;
   ResetVarSpeichern(ResetCount);
   delay(5000);
   if (ResetCount < 5) //Wenn nicht 5 mal in den ersten 5 Sekunden der Startvorgang abgebrochen wurde
@@ -293,24 +293,6 @@ void loop() {
       MQTTinit();
     }
   }
-  int Temp = digitalRead(2);
-  if(Temp == LOW)
-  {
-    if(InputState == HIGH)
-    {
-      InputState = LOW;
-      MQTT_sendInputState();
-    }
-    Ausschaltverz = millis() + 100;
-  }
-  else
-  {
-    if((InputState == LOW)&&(millis() > Ausschaltverz))
-    {
-      InputState = HIGH;
-      MQTT_sendInputState();
-    }
-  }
   //Anweisungen werden alle 3600 Sekunden (1h) ausgefuehrt
   if (Break_h < millis())
   {
@@ -322,6 +304,20 @@ void loop() {
   if (Break_s < millis())
   {
     Break_s = millis() + 1000;
+    uint8 Temp = 0;
+    for(int i = 0; i < 5; i++){
+      Temp += digitalRead(2);
+      delay(45);
+    }
+    Temp = Temp/5;
+    if(Temp != InputState)
+    {
+      InputState = Temp;
+      MQTT_sendInputState();
+      if(Temp == LOW)
+        Ausschaltverz = millis() + 100;
+    }
+    
     if(WIFIConnectionCheck(true))
       MQTT_sendInputState();
   }
@@ -330,7 +326,6 @@ void loop() {
     delay(1000);
     ESP.restart();
   }
-
 }
 
 //---------------------------------------------------------------------
@@ -407,9 +402,8 @@ bool WIFIConnectionCheck(bool with_reconnect = true)
     {
       WiFi.reconnect();
     }
-    return false;
   }
-  return true;
+  return WiFi.status()== WL_CONNECTED;
 }
 //---------------------------------------------------------------------
 void notFound(AsyncWebServerRequest *request)
